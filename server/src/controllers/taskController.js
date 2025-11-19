@@ -1,7 +1,7 @@
 const pool = require('../config/database');
 
 // Get data task
-const getAllTask = async (req, res) => {
+const getAllTasks = async (req, res) => {
     try {
         const { status, priority } = req.query;
         let query = `
@@ -170,4 +170,4 @@ const deleteTask = async (req, res) => {
     }
 };
 
-module.exports = { getAllTask, createTask, updateTask, deleteTask };
+module.exports = { getAllTasks, createTask, updateTask, deleteTask };
