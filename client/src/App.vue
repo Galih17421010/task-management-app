@@ -1,30 +1,37 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div id="app">
+    <router-view />
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+<script setup>
+import { onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
+import socket from '@/services/socket';
+import { useTaskStore } from '@/store/modules/tasks';
+
+const router = useRouter();
+const taskStore = useTaskStore();
+
+onMounted(() => {
+ const token = localStorage.getItem('token');
+
+ if (token) {
+  // socket connection
+  socket.connect(token);
+
+  // Setup real-time listeners
+  socket.onTaskCreated((data) => taskStore.handleTaskCreated(data));
+  socket.onTaskUpdated((data) => taskStore.handleTaskUpdated(data));
+  socket.onTaskDeleted((data) => taskStore.handleTaskDeleted(data));
+  socket.onProgressUpdated((data) => taskStore.handleProgressUpdated(data));
+ } else {
+  router.push('/login');
+ }
+});
+
+</script>
+
+<style>
+@import './assets/tailwind.css';
 </style>
