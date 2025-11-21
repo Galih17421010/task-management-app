@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: task_management
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: POSTGRES_PASSWORD
+    port:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./serverf
+    port:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/task_management 
+      JWT_SECRET: your-secret-key
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./client
+    port:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data
